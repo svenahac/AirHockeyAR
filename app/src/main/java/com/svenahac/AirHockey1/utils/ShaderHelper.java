@@ -14,7 +14,7 @@ public class ShaderHelper {
     }
     private static int compileShader(int type, String shaderCode) {
         final int shaderObjectId = glCreateShader(type);
-        final int[] compileStatus = new int[1];
+
 
         if (shaderObjectId == 0) {
             if (LoggerConfig.ON) {
@@ -24,6 +24,7 @@ public class ShaderHelper {
         }
         glShaderSource(shaderObjectId, shaderCode);
         glCompileShader(shaderObjectId);
+        final int[] compileStatus = new int[1];
         glGetShaderiv(shaderObjectId, GL_COMPILE_STATUS, compileStatus, 0);
 
         if (compileStatus[0] == 0) {
@@ -74,4 +75,23 @@ public class ShaderHelper {
         Log.v(TAG, "Results of validating program: " + validateStatus[0] + "\nLog: " + glGetProgramInfoLog(programObjectId));
         return validateStatus[0] != 0;
     }
+
+    public static int buildProgram(String vertexShaderSource,
+                                   String fragmentShaderSource) {
+        int program;
+
+        // Compile the shaders.
+        int vertexShader = compileVertexShader(vertexShaderSource);
+        int fragmentShader = compileFragmentShader(fragmentShaderSource);
+
+        // Link them into a shader program.
+        program = linkProgram(vertexShader, fragmentShader);
+
+        if (LoggerConfig.ON) {
+            validateProgram(program);
+        }
+
+        return program;
+    }
+
 }
